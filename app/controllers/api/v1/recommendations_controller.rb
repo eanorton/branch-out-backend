@@ -1,34 +1,34 @@
 class Api::V1::RecommendationsController < ApplicationController
 
-  def create
+  def search
 
-    body = {
-      grant_type: "authorization_code",
-      code: params[:code],
-      redirect_uri: ENV["REDIRECT_URI"],
-      client_id: ENV["CLIENT_ID"],
-      client_secret: ENV["CLIENT_SECRET"]
-    }
-    
-    auth_response = RestClient.post('https://accounts.spotify.com/api/token', body)
-    auth_params = JSON.parse(auth_response.body)
+    @user = User.first
+
+    @user.refresh_access_token
 
     header = {
-      Authorization: "Bearer #{auth_params["access_token"]}"
+      Authorization: "Bearer #{@user.access_token}"
     }
 
-    user_response = RestClient.get("https://api.spotify.com/v1/me", header)
+    artist_search = RestClient.get("https://api.spotify.com/v1/search?q=#{params[:q]}&type=artist", header)
 
-    user_params = JSON.parse(user_response.body)
+    artist_response = JSON.parse(artist_search.body)
 
-    @user = User.find_or_create_by(username: user_params["id"],
-                                  spotify_url: user_params["external_urls"]["spotify"],
-                                  href: user_params["href"],
-                                  uri: user_params["uri"])
+    artist_id = artist_response["artists"]["items"][0]["id"]
 
-    @user.update(access_token: auth_params["access_token"], refresh_token: auth_params["refresh_token"])
+    recommend_search = RestClient.get("https://api.spotify.com/v1/artists/#{artist_id}/related-artists", header)
 
-    redirect_to "http://localhost:3000/success"
+    recommendation_results = JSON.parse(recommend_search.body)
+
+    artists_object = {
+
+      searched_artist: artist_response,
+      recommended_artists: recommendation_results
+
+    }
+
+    render json: artists_object
+
   end
 
 end
