@@ -31,4 +31,26 @@ class Api::V1::RecommendationsController < ApplicationController
 
   end
 
+  def search_on_click
+
+    @user = User.first
+
+    @user.refresh_access_token
+
+    header = {
+      Authorization: "Bearer #{@user.access_token}"
+    }
+
+    recommendation_search = RestClient.get("https://api.spotify.com/v1/artists/#{params[:q]}/related-artists", header)
+
+    recommendation_results = JSON.parse(recommendation_search.body)
+
+    artists_object = {
+      recommended_artists: recommendation_results
+    }
+
+    render json: artists_object
+
+  end
+
 end
