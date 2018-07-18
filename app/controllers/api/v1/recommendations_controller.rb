@@ -20,6 +20,8 @@ class Api::V1::RecommendationsController < ApplicationController
 
     recommendation_results = JSON.parse(recommendation_search.body)
 
+    recommended_artist_ids = recommendation_results["artists"].map{|artist| artist["id"]}
+
     artists_object = {
 
       searched_artist: artist_response,
