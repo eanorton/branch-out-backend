@@ -16,9 +16,9 @@ class Api::V1::RecommendationsController < ApplicationController
 
     artist_id = artist_response["artists"]["items"][0]["id"]
 
-    recommend_search = RestClient.get("https://api.spotify.com/v1/artists/#{artist_id}/related-artists", header)
+    recommendation_search = RestClient.get("https://api.spotify.com/v1/artists/#{artist_id}/related-artists", header)
 
-    recommendation_results = JSON.parse(recommend_search.body)
+    recommendation_results = JSON.parse(recommendation_search.body)
 
     artists_object = {
 
