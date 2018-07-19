@@ -2,7 +2,7 @@ class Api::V1::RecommendationsController < ApplicationController
 
   def search
 
-    @user = User.first
+    @user = User.find_by(username: params[:u])
 
     @user.refresh_access_token
 
@@ -20,8 +20,6 @@ class Api::V1::RecommendationsController < ApplicationController
 
     recommendation_results = JSON.parse(recommendation_search.body)
 
-    recommended_artist_ids = recommendation_results["artists"].map{|artist| artist["id"]}
-
     artists_object = {
 
       searched_artist: artist_response,
@@ -35,7 +33,7 @@ class Api::V1::RecommendationsController < ApplicationController
 
   def search_on_click
 
-    @user = User.first
+    @user = User.find_by(username: params[:u])
 
     @user.refresh_access_token
 
@@ -43,7 +41,7 @@ class Api::V1::RecommendationsController < ApplicationController
       Authorization: "Bearer #{@user.access_token}"
     }
 
-    recommendation_search = RestClient.get("https://api.spotify.com/v1/artists/#{params[:q]}/related-artists", header)
+    recommendation_search = RestClient.get("https://api.spotify.com/v1/artists/#{params[:q]}/related-artists?limit=3", header)
 
     recommendation_results = JSON.parse(recommendation_search.body)
 
