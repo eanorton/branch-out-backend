@@ -11,19 +11,34 @@ class Api::V1::RecommendationsController < ApplicationController
     }
 
     artist_search = RestClient.get("https://api.spotify.com/v1/search?q=#{params[:q]}&type=artist", header)
-
     artist_response = JSON.parse(artist_search.body)
 
-    artist_id = artist_response["artists"]["items"][0]["id"]
+    searched_artist_id = artist_response["artists"]["items"][0]["id"]
 
-    recommendation_search = RestClient.get("https://api.spotify.com/v1/artists/#{artist_id}/related-artists", header)
-
+    recommendation_search = RestClient.get("https://api.spotify.com/v1/artists/#{searched_artist_id}/related-artists", header)
     recommendation_results = JSON.parse(recommendation_search.body)
+
+
+    searched_artist_top_tracks = RestClient.get("https://api.spotify.com/v1/artists/#{searched_artist_id}/top-tracks?country=US", header)
+    searched_artist_top_tracks_resp = JSON.parse(searched_artist_top_tracks.body)
+
+    artist2_top_tracks = RestClient.get("https://api.spotify.com/v1/artists/#{recommendation_results["artists"][0]["id"]}/top-tracks?country=US", header)
+    artist2_top_tracks_resp = JSON.parse(artist2_top_tracks.body)
+
+    artist3_top_tracks = RestClient.get("https://api.spotify.com/v1/artists/#{recommendation_results["artists"][1]["id"]}/top-tracks?country=US", header)
+    artist3_top_tracks_resp = JSON.parse(artist3_top_tracks.body)
+
+    artist4_top_tracks = RestClient.get("https://api.spotify.com/v1/artists/#{recommendation_results["artists"][2]["id"]}/top-tracks?country=US", header)
+    artist4_top_tracks_resp = JSON.parse(artist4_top_tracks.body)
 
     artists_object = {
 
       searched_artist: artist_response,
-      recommended_artists: recommendation_results
+      recommended_artists: recommendation_results,
+      searched_artist_tracks: searched_artist_top_tracks_resp,
+      rec1_artist_tracks: artist2_top_tracks_resp,
+      rec2_artist_tracks: artist3_top_tracks_resp,
+      rec3_artist_tracks: artist4_top_tracks_resp
 
     }
 
