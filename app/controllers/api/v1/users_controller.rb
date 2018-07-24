@@ -54,4 +54,13 @@ class Api::V1::UsersController < ApplicationController
 
   end
 
+  def logout
+
+  @user = User.find_by(username: params[:u])
+  @user.update(access_token: "", refresh_token: "")
+
+  redirect_to "http://localhost:3000/"
+
+  end
+
 end

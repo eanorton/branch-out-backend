@@ -24,6 +24,7 @@ class User < ApplicationRecord
     else
       puts "Access token still valid"
     end
+
   end
 
 end
