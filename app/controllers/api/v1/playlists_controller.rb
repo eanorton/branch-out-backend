@@ -34,16 +34,9 @@ class Api::V1::PlaylistsController < ApplicationController
       "uris": params[:t]
     }
 
-    playlist_id = params[:p][37..100]
+    playlist_id = params[:p].split(":").last
 
-    add_tracks = RestClient::Request.execute(
-      method: :post,
-      url: "https://api.spotify.com/v1/users/#{@user.username}/playlists/#{playlist_id}/tracks?uris=#{params[:t]}",
-      headers: {
-        Authorization: "Bearer #{@user.access_token}",
-        content_type: "application/json"
-      }
-    )
+    add_tracks = RestClient::Request.execute(method: :post, url: "https://api.spotify.com/v1/users/#{@user.username}/playlists/#{playlist_id}/tracks?uris=#{params[:t]}", headers: { Authorization: "Bearer #{@user.access_token}", content_type: "application/json"})
 
     tracks_response = JSON.parse(add_tracks.body)
 
