@@ -1,6 +1,12 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+gem 'nokogiri'
+
+gem 'rack'
+
+gem 'rspec'
+
 ruby '2.3.3'
 
 gem 'rest-client'
